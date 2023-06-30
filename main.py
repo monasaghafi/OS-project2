@@ -1,4 +1,5 @@
 from queue import PriorityQueue, Queue
+import random
 
 
 # Class to represent a task
@@ -8,6 +9,7 @@ class Task:
         self.type = type
         self.duration = duration
         self.status = "Ready"
+        self.waiting_time = 0
         self.execution_time = 0
 
     def __lt__(self, other):
@@ -19,10 +21,13 @@ class Task:
 # Function to check if resources are available for a task
 def check_resources(task, resources):
     if task.type == "X":
+        # allcoting R1 , R2
         return resources[0] >= 1 and resources[1] >= 1
     elif task.type == "Y":
+        # allcoting R2 , R3
         return resources[1] >= 1 and resources[2] >= 1
     elif task.type == "Z":
+        # allcoting R1 , R3
         return resources[0] >= 1 and resources[2] >= 1
     else:
         return False
@@ -56,6 +61,7 @@ def release_resources(task, resources):
 
 # Function to update task status and execution time
 def update_task_status(task, status):
+    # status = {"READY","RUNNING","COMPLETED"}
     task.status = status
     if status == "Running":
         task.execution_time += 1
@@ -78,13 +84,18 @@ def schedule_sjf(tasks, resources):
     pq = PriorityQueue()
     wq = Queue()
 
-    # Add tasks to the priority queue
-    for task in tasks:
-        pq.put(task)
+    # Sort tasks based on duration
+    sorted_tasks = sorted(tasks, key=lambda x: x.duration)
+    # for task in sorted_tasks:
+    #     print(task.name)
+
+    # Add tasks to the priority queue in order
+    for task in sorted_tasks:
+        pq.put((task.duration, task))
 
     processor = None
 
-    while not pq.empty() or not wq.empty() or processor is not None:
+    while not (pq.empty() and wq.empty() and processor is None):
         print_system_state(pq, wq, resources, processor)
 
         # Check if processor is idle
@@ -118,14 +129,20 @@ def schedule_sjf(tasks, resources):
                 processor = None
 
         # Check waiting queue to see if any tasks can be allocated resources now
-        for _ in range(wq.qsize()):
+        temp_wq = (
+            Queue()
+        )  # Temporary queue to store tasks that cannot be allocated resources
+        while not wq.empty():
             task = wq.get()
             if check_resources(task, resources):
                 allocate_resources(task, resources)
                 update_task_status(task, "Running")
                 processor = task
             else:
-                wq.put(task)
+                task.waiting_time += 1
+                temp_wq.put(task)
+
+        wq = temp_wq
 
 
 # Function to schedule tasks using First-Come-First-Serve (FCFS) algorithm
@@ -139,7 +156,7 @@ def schedule_fcfs(tasks, resources):
 
     processor = None
 
-    while not pq.empty() or not wq.empty() or processor is not None:
+    while not (pq.empty() and wq.empty() and processor is None):
         print_system_state(pq, wq, resources, processor)
 
         # Check if processor is idle
@@ -173,16 +190,24 @@ def schedule_fcfs(tasks, resources):
                 processor = None
 
         # Check waiting queue to see if any tasks can be allocated resources now
-        for _ in range(wq.qsize()):
+        temp_wq = (
+            Queue()
+        )  # Temporary queue to store tasks that cannot be allocated resources
+        while not wq.empty():
             task = wq.get()
             if check_resources(task, resources):
                 allocate_resources(task, resources)
                 update_task_status(task, "Running")
                 processor = task
             else:
-                wq.put(task)
-        
+                task.waiting_time += 1
+                temp_wq.put(task)
+
+        wq = temp_wq
+
     # Function to schedule tasks using Highest-Response-Ratio-Next (HRRN) algorithm
+
+
 def schedule_hrrn(tasks, resources):
     pq = PriorityQueue()
     wq = Queue()
@@ -193,7 +218,7 @@ def schedule_hrrn(tasks, resources):
 
     processor = None
 
-    while not pq.empty() or not wq.empty() or processor is not None:
+    while not (pq.empty() and wq.empty() and processor is None):
         print_system_state(pq, wq, resources, processor)
 
         # Check if processor is idle
@@ -227,17 +252,21 @@ def schedule_hrrn(tasks, resources):
                 processor = None
 
         # Check waiting queue to see if any tasks can be allocated resources now
-        for _ in range(wq.qsize()):
+        temp_wq = (
+            Queue()
+        )  # Temporary queue to store tasks that cannot be allocated resources
+        while not wq.empty():
             task = wq.get()
             if check_resources(task, resources):
                 allocate_resources(task, resources)
-                update_task_status(task, "running")
+                update_task_status(task, "Running")
                 processor = task
             else:
-                wq.put(task)
-            else:
                 task.waiting_time += 1
-                wq.put(task)
+                temp_wq.put(task)
+
+        wq = temp_wq
+
 
 # Function to schedule tasks using Round Robin (RR) algorithm
 def schedule_rr(tasks, resources, time_quantum):
@@ -250,7 +279,7 @@ def schedule_rr(tasks, resources, time_quantum):
 
     processor = None
 
-    while not pq.empty() or not wq.empty() or processor is not None:
+    while not (pq.empty() and wq.empty() and processor is None):
         print_system_state(pq, wq, resources, processor)
 
         # Check if processor is idle
@@ -263,7 +292,7 @@ def schedule_rr(tasks, resources, time_quantum):
                     update_task_status(task, "Running")
                     processor = task
                 else:
-                wq.put(task)
+                    wq.put(task)
             else:
                 # No tasks in the priority queue, check waiting queue
                 if not wq.empty():
@@ -284,17 +313,26 @@ def schedule_rr(tasks, resources, time_quantum):
                 processor = None
 
         # Check waiting queue to see if any tasks can be allocated resources now
-        for _ in range(wq.qsize()):
+        temp_wq = (
+            Queue()
+        )  # Temporary queue to store tasks that cannot be allocated resources
+        while not wq.empty():
             task = wq.get()
             if check_resources(task, resources):
                 allocate_resources(task, resources)
                 update_task_status(task, "Running")
                 processor = task
             else:
-                wq.put(task)
+                task.waiting_time += 1
+                temp_wq.put(task)
 
+        wq = temp_wq
         # Check if time quantum is reached for RR
-        if processor is not None and algorithm_choice == '3' and processor.execution_time % time_quantum == 0:
+        if (
+            processor is not None
+            and algorithm_choice == "3"
+            and processor.execution_time % time_quantum == 0
+        ):
             release_resources(processor, resources)
             update_task_status(processor, "Ready")
             wq.put(processor)
