@@ -17,6 +17,10 @@ class Task:
         priorities = {"Z": 1, "Y": 2, "X": 3}
         if self.option == 1:
             return priorities[self.type] < priorities[other.type]
+        elif self.option == 2 and self.waiting_time > 0:
+            return ((self.waiting_time + self.duration) / self.duration) < (
+                (other.waiting_time + other.duration) / other.duration
+            )
         else:
             return self.duration < other.duration
 
@@ -73,7 +77,13 @@ def update_task_status(task, status):
 # Function to print the state of the system
 def print_system_state(pq, wq, resources, processor):
     print(f"R1: {resources[0]} R2: {resources[1]} R3: {resources[2]}")
-    print("Priority queue:", [task.name for task in pq.queue])
+    print(
+        "Priority queue:",
+        [
+            f"{task.name}: {(task.waiting_time+task.duration)/task.duration}"
+            for task in pq.queue
+        ],
+    )
     print("Waiting queue:", [task.name for task in wq.queue])
     print("Processor state:", end=" ")
     if processor is None:
@@ -215,6 +225,7 @@ def schedule_hrrn(tasks, resources):
 
     # Add tasks to the priority queue
     for task in tasks:
+        task.option = 2
         pq.put(task)
 
     processor = None
@@ -251,22 +262,10 @@ def schedule_hrrn(tasks, resources):
                 release_resources(processor, resources)
                 update_task_status(processor, "Completed")
                 processor = None
-
-        # Check waiting queue to see if any tasks can be allocated resources now
-        temp_wq = (
-            Queue()
-        )  # Temporary queue to store tasks that cannot be allocated resources
-        while not wq.empty():
-            task = wq.get()
-            if check_resources(task, resources):
-                allocate_resources(task, resources)
-                update_task_status(task, "Running")
-                processor = task
-            else:
+        for task in tasks:
+            if task != processor:
                 task.waiting_time += 1
-                temp_wq.put(task)
-
-        wq = temp_wq
+                print(task.name, task.waiting_time)
 
 
 # Function to schedule tasks using Round Robin (RR) algorithm
@@ -319,21 +318,6 @@ def schedule_rr(tasks, resources, time_quantum):
                 update_task_status(processor, "Completed")
                 processor = None
 
-        # # Check waiting queue to see if any tasks can be allocated resources now
-        # temp_wq = (
-        #     Queue()
-        # )  # Temporary queue to store tasks that cannot be allocated resources
-        # while not wq.empty():
-        #     task = wq.get()
-        #     if check_resources(task, resources):
-        #         allocate_resources(task, resources)
-        #         update_task_status(task, "Running")
-        #         processor = task
-        #     else:
-        #         task.waiting_time += 1
-        #         temp_wq.put(task)
-
-        # wq = temp_wq
         # Check if time quantum is reached for RR
         if (
             processor is not None
