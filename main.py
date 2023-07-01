@@ -1,5 +1,4 @@
 from queue import PriorityQueue, Queue
-import random
 
 
 # Class to represent a task
@@ -11,11 +10,15 @@ class Task:
         self.status = "Ready"
         self.waiting_time = 0
         self.execution_time = 0
+        self.option = 0
 
     def __lt__(self, other):
         # Comparison for priority queue based on task priority
         priorities = {"Z": 1, "Y": 2, "X": 3}
-        return priorities[self.type] < priorities[other.type]
+        if self.option == 1:
+            return priorities[self.type] < priorities[other.type]
+        else:
+            return self.duration < other.duration
 
 
 # Function to check if resources are available for a task
@@ -86,12 +89,10 @@ def schedule_sjf(tasks, resources):
 
     # Sort tasks based on duration
     sorted_tasks = sorted(tasks, key=lambda x: x.duration)
-    # for task in sorted_tasks:
-    #     print(task.name)
 
-    # Add tasks to the priority queue in order
+    # Add tasks to the priority queue
     for task in sorted_tasks:
-        pq.put((task.duration, task))
+        pq.put(task)
 
     processor = None
 
@@ -275,6 +276,7 @@ def schedule_rr(tasks, resources, time_quantum):
 
     # Add tasks to the priority queue
     for task in tasks:
+        task.option = 1
         pq.put(task)
 
     processor = None
@@ -293,6 +295,7 @@ def schedule_rr(tasks, resources, time_quantum):
                     processor = task
                 else:
                     wq.put(task)
+                    print("WQ2")
             else:
                 # No tasks in the priority queue, check waiting queue
                 if not wq.empty():
@@ -301,8 +304,12 @@ def schedule_rr(tasks, resources, time_quantum):
                         allocate_resources(task, resources)
                         update_task_status(task, "Running")
                         processor = task
+                    else:
+                        wq.put(task)
+                        print("WQ3")
 
         else:
+            print("else")
             # If a task is running on the processor
             update_task_status(processor, "Running")
             processor.duration -= 1
@@ -312,21 +319,21 @@ def schedule_rr(tasks, resources, time_quantum):
                 update_task_status(processor, "Completed")
                 processor = None
 
-        # Check waiting queue to see if any tasks can be allocated resources now
-        temp_wq = (
-            Queue()
-        )  # Temporary queue to store tasks that cannot be allocated resources
-        while not wq.empty():
-            task = wq.get()
-            if check_resources(task, resources):
-                allocate_resources(task, resources)
-                update_task_status(task, "Running")
-                processor = task
-            else:
-                task.waiting_time += 1
-                temp_wq.put(task)
+        # # Check waiting queue to see if any tasks can be allocated resources now
+        # temp_wq = (
+        #     Queue()
+        # )  # Temporary queue to store tasks that cannot be allocated resources
+        # while not wq.empty():
+        #     task = wq.get()
+        #     if check_resources(task, resources):
+        #         allocate_resources(task, resources)
+        #         update_task_status(task, "Running")
+        #         processor = task
+        #     else:
+        #         task.waiting_time += 1
+        #         temp_wq.put(task)
 
-        wq = temp_wq
+        # wq = temp_wq
         # Check if time quantum is reached for RR
         if (
             processor is not None
@@ -336,7 +343,9 @@ def schedule_rr(tasks, resources, time_quantum):
             release_resources(processor, resources)
             update_task_status(processor, "Ready")
             wq.put(processor)
+            print("WQ4")
             processor = None
+            # print("proccer is not")
 
 
 # Example usage
