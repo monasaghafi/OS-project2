@@ -272,6 +272,7 @@ def schedule_hrrn(tasks, resources):
 def schedule_rr(tasks, resources, time_quantum):
     pq = PriorityQueue()
     wq = Queue()
+    time = 0
 
     # Add tasks to the priority queue
     for task in tasks:
@@ -281,10 +282,13 @@ def schedule_rr(tasks, resources, time_quantum):
     processor = None
 
     while not (pq.empty() and wq.empty() and processor is None):
-        print_system_state(pq, wq, resources, processor)
+        if time % time_quantum == 0 or (
+            processor != None and processor.duration < time_quantum
+        ):
+            print_system_state(pq, wq, resources, processor)
 
         # Check if processor is idle
-        if processor is None:
+        if processor is None and time % time_quantum != 0:
             # Check if there are any tasks in the priority queue
             if not pq.empty():
                 task = pq.get()
@@ -325,11 +329,12 @@ def schedule_rr(tasks, resources, time_quantum):
             and processor.execution_time % time_quantum == 0
         ):
             release_resources(processor, resources)
-            update_task_status(processor, "Ready")
+            update_task_status(processor, "READY")
             wq.put(processor)
             print("WQ4")
             processor = None
             # print("proccer is not")
+        time += 1
 
 
 # Example usage
