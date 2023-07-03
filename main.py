@@ -1,6 +1,3 @@
-from queue import PriorityQueue, Queue
-
-
 # Class to represent a task
 class Task:
     def __init__(self, name, type, duration):
@@ -77,13 +74,16 @@ def update_task_status(task, status):
 # Function to print the state of the system
 def print_system_state(pq, wq, resources, processor):
     print(f"R1: {resources[0]} R2: {resources[1]} R3: {resources[2]}")
-    print(
-        "Priority queue:",
-        [
-            f"{task.name}: {(task.waiting_time+task.duration)/task.duration}"
-            for task in pq.queue
-        ],
-    )
+    if isinstance(pq, PriorityQueue):
+        print(
+            "Priority queue:",
+            [task.name for task in pq.queue],
+        )
+    else:
+        print(
+            "Priority queue:",
+            [task.name for task in pq],
+        )
     print("Waiting queue:", [task.name for task in wq.queue])
     print("Processor state:", end=" ")
     if processor is None:
@@ -270,35 +270,34 @@ def schedule_hrrn(tasks, resources):
 
 # Function to schedule tasks using Round Robin (RR) algorithm
 def schedule_rr(tasks, resources, time_quantum):
-    pq = PriorityQueue()
+    pq = []
     wq = Queue()
     time = 0
 
     # Add tasks to the priority queue
     for task in tasks:
         task.option = 1
-        pq.put(task)
-
+        pq.append(task)
+    pq.sort()
     processor = None
-
-    while not (pq.empty() and wq.empty() and processor is None):
-        if time % time_quantum == 0 or (
-            processor != None and processor.duration < time_quantum
-        ):
-            print_system_state(pq, wq, resources, processor)
-
+    while not (len(pq) == 0 and wq.empty() and processor is None):
+        # Check if time quantum is reached for RR
+        if processor is not None and time % time_quantum == 0:
+            release_resources(processor, resources)
+            update_task_status(processor, "READY")
+            pq.append(processor)
+            processor = None
         # Check if processor is idle
-        if processor is None and time % time_quantum != 0:
+        if processor is None:
             # Check if there are any tasks in the priority queue
-            if not pq.empty():
-                task = pq.get()
+            if len(pq) > 0:
+                task = pq.pop(0)
                 if check_resources(task, resources):
                     allocate_resources(task, resources)
                     update_task_status(task, "Running")
                     processor = task
                 else:
                     wq.put(task)
-                    print("WQ2")
             else:
                 # No tasks in the priority queue, check waiting queue
                 if not wq.empty():
@@ -309,31 +308,17 @@ def schedule_rr(tasks, resources, time_quantum):
                         processor = task
                     else:
                         wq.put(task)
-                        print("WQ3")
-
-        else:
-            print("else")
-            # If a task is running on the processor
-            update_task_status(processor, "Running")
-            processor.duration -= 1
-            processor.execution_time += 1
-            if processor.duration == 0:
-                release_resources(processor, resources)
-                update_task_status(processor, "Completed")
-                processor = None
-
-        # Check if time quantum is reached for RR
-        if (
-            processor is not None
-            and algorithm_choice == "3"
-            and processor.execution_time % time_quantum == 0
-        ):
+        print(f"t={time}")
+        print_system_state(pq, wq, resources, processor)
+        # If a task is running on the processor
+        update_task_status(processor, "Running")
+        processor.duration -= 1
+        processor.execution_time += 1
+        if processor.duration == 0:
             release_resources(processor, resources)
-            update_task_status(processor, "READY")
-            wq.put(processor)
-            print("WQ4")
+            update_task_status(processor, "Completed")
             processor = None
-            # print("proccer is not")
+
         time += 1
 
 
