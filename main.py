@@ -1,3 +1,6 @@
+from queue import PriorityQueue, Queue
+
+
 # Class to represent a task
 class Task:
     def __init__(self, name, type, duration):
@@ -15,7 +18,7 @@ class Task:
         if self.option == 1:
             return priorities[self.type] < priorities[other.type]
         elif self.option == 2 and self.waiting_time > 0:
-            return ((self.waiting_time + self.duration) / self.duration) < (
+            return ((self.waiting_time + self.duration) / self.duration) > (
                 (other.waiting_time + other.duration) / other.duration
             )
         else:
@@ -33,6 +36,13 @@ def check_resources(task, resources):
     elif task.type == "Z":
         # allcoting R1 , R3
         return resources[0] >= 1 and resources[2] >= 1
+    else:
+        return False
+
+
+def Check_resource_not_available(resources):
+    if resources[0] == 0 and resources[1] == 0 and resources[2] == 0:
+        return True
     else:
         return False
 
@@ -72,7 +82,7 @@ def update_task_status(task, status):
 
 
 # Function to print the state of the system
-def print_system_state(pq, wq, resources, processor):
+def print_system_state(pq, wq, resources, processor, temp=None):
     print(f"R1: {resources[0]} R2: {resources[1]} R3: {resources[2]}")
     if isinstance(pq, PriorityQueue):
         print(
@@ -84,6 +94,8 @@ def print_system_state(pq, wq, resources, processor):
             "Priority queue:",
             [task.name for task in pq],
         )
+    if temp is not None:
+        print("temp queue:", [task.name for task in temp])
     print("Waiting queue:", [task.name for task in wq.queue])
     print("Processor state:", end=" ")
     if processor is None:
@@ -158,23 +170,23 @@ def schedule_sjf(tasks, resources):
 
 # Function to schedule tasks using First-Come-First-Serve (FCFS) algorithm
 def schedule_fcfs(tasks, resources):
-    pq = PriorityQueue()
+    pq = []
     wq = Queue()
 
     # Add tasks to the priority queue
     for task in tasks:
-        pq.put(task)
+        pq.append(task)
 
     processor = None
 
-    while not (pq.empty() and wq.empty() and processor is None):
+    while not (len(pq) == 0 and wq.empty() and processor is None):
         print_system_state(pq, wq, resources, processor)
 
         # Check if processor is idle
         if processor is None:
             # Check if there are any tasks in the priority queue
-            if not pq.empty():
-                task = pq.get()
+            if len(pq) > 0:
+                task = pq.pop(0)
                 if check_resources(task, resources):
                     allocate_resources(task, resources)
                     update_task_status(task, "Running")
@@ -265,7 +277,6 @@ def schedule_hrrn(tasks, resources):
         for task in tasks:
             if task != processor:
                 task.waiting_time += 1
-                print(task.name, task.waiting_time)
 
 
 # Function to schedule tasks using Round Robin (RR) algorithm
@@ -273,24 +284,25 @@ def schedule_rr(tasks, resources, time_quantum):
     pq = []
     wq = Queue()
     time = 0
-
+    temp = []
+    flag = 0
     # Add tasks to the priority queue
     for task in tasks:
         task.option = 1
         pq.append(task)
     pq.sort()
     processor = None
-    while not (len(pq) == 0 and wq.empty() and processor is None):
+    while not (len(pq) == 0 and len(temp) == 0 and wq.empty() and processor is None):
         # Check if time quantum is reached for RR
         if processor is not None and time % time_quantum == 0:
-            release_resources(processor, resources)
+            # release_resources(processor, resources)
             update_task_status(processor, "READY")
-            pq.append(processor)
+            temp.append(processor)
             processor = None
         # Check if processor is idle
-        if processor is None:
+        while processor is None:
             # Check if there are any tasks in the priority queue
-            if len(pq) > 0:
+            if len(pq) > 0 and (not Check_resource_not_available(resources)):
                 task = pq.pop(0)
                 if check_resources(task, resources):
                     allocate_resources(task, resources)
@@ -298,6 +310,10 @@ def schedule_rr(tasks, resources, time_quantum):
                     processor = task
                 else:
                     wq.put(task)
+            elif len(temp) > 0:
+                task = temp.pop(0)
+                update_task_status(task, "Running")
+                processor = task
             else:
                 # No tasks in the priority queue, check waiting queue
                 if not wq.empty():
@@ -308,8 +324,9 @@ def schedule_rr(tasks, resources, time_quantum):
                         processor = task
                     else:
                         wq.put(task)
+                        processor = None
         print(f"t={time}")
-        print_system_state(pq, wq, resources, processor)
+        print_system_state(pq, wq, resources, processor, temp)
         # If a task is running on the processor
         update_task_status(processor, "Running")
         processor.duration -= 1
@@ -318,6 +335,7 @@ def schedule_rr(tasks, resources, time_quantum):
             release_resources(processor, resources)
             update_task_status(processor, "Completed")
             processor = None
+            time = 0
 
         time += 1
 

@@ -222,6 +222,309 @@ Priority queue: []
 Waiting queue: []
 Processor state: Running task: T3
 
+
+
+based on He gave:
+Choice: 3
+Enter the time quantum for Round Robin (RR): 2
+t=0
+R1: 1 R2: 1 R3: 2
+Priority queue: ['t4', 't3', 't6', 't1', 't5', 't7']
+temp queue: []
+Waiting queue: []
+Processor state: Running task: t2
+t=1
+R1: 1 R2: 1 R3: 2
+Priority queue: ['t4', 't3', 't6', 't1', 't5', 't7']
+temp queue: []
+Waiting queue: []
+Processor state: Running task: t2
+t=2
+R1: 0 R2: 1 R3: 1
+Priority queue: ['t3', 't6', 't1', 't5', 't7']
+temp queue: ['t2']
+Waiting queue: []
+Processor state: Running task: t4
+t=3
+R1: 0 R2: 1 R3: 1
+Priority queue: ['t3', 't6', 't1', 't5', 't7']
+temp queue: ['t2']
+Waiting queue: []
+Processor state: Running task: t4
+t=4
+R1: 0 R2: 0 R3: 0
+Priority queue: ['t6', 't1', 't5', 't7']
+temp queue: ['t2', 't4']
+Waiting queue: []
+Processor state: Running task: t3
+t=5
+R1: 0 R2: 0 R3: 0
+Priority queue: ['t6', 't1', 't5', 't7']
+temp queue: ['t2', 't4']
+Waiting queue: []
+Processor state: Running task: t3
+t=6
+R1: 0 R2: 0 R3: 0
+Priority queue: ['t6', 't1', 't5', 't7']
+temp queue: ['t4', 't3']
+Waiting queue: []
+Processor state: Running task: t2
+t=7
+R1: 0 R2: 0 R3: 0
+Priority queue: ['t6', 't1', 't5', 't7']
+temp queue: ['t4', 't3']
+Waiting queue: []
+Processor state: Running task: t2
+t=8
+R1: 0 R2: 0 R3: 0
+Priority queue: ['t6', 't1', 't5', 't7']
+temp queue: ['t3', 't2']
+Waiting queue: []
+Processor state: Running task: t4
+t=9
+R1: 0 R2: 0 R3: 0
+Priority queue: ['t6', 't1', 't5', 't7']
+temp queue: ['t3', 't2']
+Waiting queue: []
+Processor state: Running task: t4
+t=1
+R1: 1 R2: 0 R3: 1
+Priority queue: []
+temp queue: ['t2']
+Waiting queue: ['t6', 't1', 't5', 't7']
+Processor state: Running task: t3
+t=2
+R1: 1 R2: 0 R3: 1
+Priority queue: []
+temp queue: ['t3']
+Waiting queue: ['t6', 't1', 't5', 't7']
+Processor state: Running task: t2
+t=3
+R1: 1 R2: 0 R3: 1
+Priority queue: []
+temp queue: ['t3']
+Waiting queue: ['t6', 't1', 't5', 't7']
+Processor state: Running task: t2
+t=4
+R1: 1 R2: 0 R3: 1
+Priority queue: []
+temp queue: ['t2']
+Waiting queue: ['t6', 't1', 't5', 't7']
+Processor state: Running task: t3
+t=1
+R1: 1 R2: 1 R3: 2
+Priority queue: []
+temp queue: []
+Waiting queue: ['t6', 't1', 't5', 't7']
+Processor state: Running task: t2
+t=2
+R1: 1 R2: 1 R3: 2
+Priority queue: []
+temp queue: []
+Waiting queue: ['t6', 't1', 't5', 't7']
+Processor state: Running task: t2
+t=1
+R1: 2 R2: 0 R3: 2
+Priority queue: []
+temp queue: []
+Waiting queue: ['t1', 't5', 't7']
+Processor state: Running task: t6
+t=2
+R1: 2 R2: 0 R3: 2
+Priority queue: []
+temp queue: []
+Waiting queue: ['t1', 't5', 't7']
+Processor state: Running task: t6
+t=3
+R1: 2 R2: 0 R3: 2
+Priority queue: []
+temp queue: []
+Waiting queue: ['t1', 't5', 't7']
+Processor state: Running task: t6
+t=4
+R1: 2 R2: 0 R3: 2
+Priority queue: []
+temp queue: []
+Waiting queue: ['t1', 't5', 't7']
+Processor state: Running task: t6
+t=5
+R1: 2 R2: 0 R3: 2
+Priority queue: []
+temp queue: []
+Waiting queue: ['t1', 't5', 't7']
+Processor state: Running task: t6
+t=6
+R1: 2 R2: 0 R3: 2
+Priority queue: []
+temp queue: []
+Waiting queue: ['t1', 't5', 't7']
+Processor state: Running task: t6
+t=1
+R1: 1 R2: 0 R3: 3
+Priority queue: []
+temp queue: []
+Waiting queue: ['t5', 't7']
+Processor state: Running task: t1
+t=2
+R1: 1 R2: 0 R3: 3
+Priority queue: []
+temp queue: []
+Waiting queue: ['t5', 't7']
+Processor state: Running task: t1
+t=3
+R1: 1 R2: 0 R3: 3
+Priority queue: []
+temp queue: []
+Waiting queue: ['t5', 't7']
+Processor state: Running task: t1
+t=4
+R1: 1 R2: 0 R3: 3
+Priority queue: []
+temp queue: []
+Waiting queue: ['t5', 't7']
+Processor state: Running task: t1
+t=5
+R1: 1 R2: 0 R3: 3
+Priority queue: []
+temp queue: []
+Waiting queue: ['t5', 't7']
+Processor state: Running task: t1
+t=6
+R1: 1 R2: 0 R3: 3
+Priority queue: []
+temp queue: []
+Waiting queue: ['t5', 't7']
+Processor state: Running task: t1
+t=7
+R1: 1 R2: 0 R3: 3
+Priority queue: []
+temp queue: []
+Waiting queue: ['t5', 't7']
+Processor state: Running task: t1
+t=8
+R1: 1 R2: 0 R3: 3
+Priority queue: []
+temp queue: []
+Waiting queue: ['t5', 't7']
+Processor state: Running task: t1
+t=9
+R1: 1 R2: 0 R3: 3
+Priority queue: []
+temp queue: []
+Waiting queue: ['t5', 't7']
+Processor state: Running task: t1
+t=1
+R1: 1 R2: 0 R3: 3
+Priority queue: []
+temp queue: []
+Waiting queue: ['t7']
+Processor state: Running task: t5
+t=2
+R1: 1 R2: 0 R3: 3
+Priority queue: []
+temp queue: []
+Waiting queue: ['t7']
+Processor state: Running task: t5
+t=1
+R1: 1 R2: 0 R3: 3
+Priority queue: []
+temp queue: []
+Waiting queue: []
+Processor state: Running task: t7
+t=2
+R1: 1 R2: 0 R3: 3
+Priority queue: []
+temp queue: []
+Waiting queue: []
+Processor state: Running task: t7
+t=3
+R1: 1 R2: 0 R3: 3
+Priority queue: []
+temp queue: []
+Waiting queue: []
+Processor state: Running task: t7
+t=4
+R1: 1 R2: 0 R3: 3
+Priority queue: []
+temp queue: []
+Waiting queue: []
+Processor state: Running task: t7
+
+
 -----------------HRRN-----------------
+Choice: 4
+R1: 2 R2: 2 R3: 2
+Priority queue: ['T4', 'T1', 'T3', 'T2']
+Waiting queue: []
+Processor state: Idle
+R1: 1 R2: 1 R3: 2
+Priority queue: ['T1', 'T2', 'T3']
+Waiting queue: []
+Processor state: Running task: T4
+R1: 1 R2: 1 R3: 2
+Priority queue: ['T1', 'T2', 'T3']
+Waiting queue: []
+Processor state: Running task: T4
+R1: 2 R2: 2 R3: 2
+Priority queue: ['T1', 'T2', 'T3']
+Waiting queue: []
+Processor state: Idle
+R1: 1 R2: 1 R3: 2
+Priority queue: ['T2', 'T3']
+Waiting queue: []
+Processor state: Running task: T1
+R1: 1 R2: 1 R3: 2
+Priority queue: ['T2', 'T3']
+Waiting queue: []
+Processor state: Running task: T1
+R1: 1 R2: 1 R3: 2
+Priority queue: ['T2', 'T3']
+Waiting queue: []
+Processor state: Running task: T1
+R1: 2 R2: 2 R3: 2
+Priority queue: ['T2', 'T3']
+Waiting queue: []
+Processor state: Idle
+R1: 2 R2: 1 R3: 1
+Priority queue: ['T3']
+Waiting queue: []
+Processor state: Running task: T2
+R1: 2 R2: 1 R3: 1
+Priority queue: ['T3']
+Waiting queue: []
+Processor state: Running task: T2
+R1: 2 R2: 1 R3: 1
+Priority queue: ['T3']
+Waiting queue: []
+Processor state: Running task: T2
+R1: 2 R2: 1 R3: 1
+Priority queue: ['T3']
+Waiting queue: []
+Processor state: Running task: T2
+R1: 2 R2: 2 R3: 2
+Priority queue: ['T3']
+Waiting queue: []
+Processor state: Idle
+R1: 1 R2: 2 R3: 1
+Priority queue: []
+Waiting queue: []
+Processor state: Running task: T3
+R1: 1 R2: 2 R3: 1
+Priority queue: []
+Waiting queue: []
+Processor state: Running task: T3
+R1: 1 R2: 2 R3: 1
+Priority queue: []
+Waiting queue: []
+Processor state: Running task: T3
+R1: 1 R2: 2 R3: 1
+Priority queue: []
+Waiting queue: []
+Processor state: Running task: T3
+R1: 1 R2: 2 R3: 1
+Priority queue: []
+Waiting queue: []
+Processor state: Running task: T3
+
 
 
